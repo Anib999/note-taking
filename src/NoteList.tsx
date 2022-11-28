@@ -3,16 +3,25 @@ import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactSelect from "react-select";
 import { Tag } from "./App";
+import { EditTagsModal } from "./EditTagsModal";
 import { NoteCard, SimplifiedNote } from "./NoteCard";
 
 type NoteListProps = {
   availableTags: Tag[];
   notes: SimplifiedNote[];
+  updateTag: (id: string, label: string) => void;
+  deleteTag: (id: string) => void;
 };
 
-export function NoteList({ availableTags, notes }: NoteListProps) {
+export function NoteList({
+  availableTags,
+  notes,
+  updateTag,
+  deleteTag,
+}: NoteListProps) {
   const [title, setTitle] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
@@ -38,7 +47,12 @@ export function NoteList({ availableTags, notes }: NoteListProps) {
             <Link to={"/new"}>
               <Button variant="primary">Create</Button>
             </Link>
-            <Button variant="outline-secondary">Edit Tags</Button>
+            <Button
+              variant="outline-secondary"
+              onClick={() => setShowModal(true)}
+            >
+              Edit Tags
+            </Button>
           </Stack>
         </Col>
       </Row>
@@ -84,6 +98,15 @@ export function NoteList({ availableTags, notes }: NoteListProps) {
           </Col>
         ))}
       </Row>
+      <EditTagsModal
+        availableTags={availableTags}
+        show={showModal}
+        onHandleClose={() => {
+          setShowModal(false);
+        }}
+        updateTag={updateTag}
+        deleteTag={deleteTag}
+      />
     </>
   );
 }
